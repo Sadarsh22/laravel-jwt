@@ -19,4 +19,5 @@ Route::controller(postController::class)->group(function(){
     Route::post('create','create');
     Route::get('listing','listing');
     Route::post('edit/{id}','edit');
+    Route::post('delete/{id}','delete');
 });

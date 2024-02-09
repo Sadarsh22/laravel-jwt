@@ -59,27 +59,31 @@ class postController extends Controller
             'category' => 'required|string|min:6',
         ]);
 
-        // $uid = Auth::user()->id;
         $post = Post::find($id);
-        print_r($id);
-        die();
 
         $post->name = $request->name;
         $post->description = $request->description;
         $post->image = $request->image;
         $post->category = $request->category;
-        $post->user_id = $id;
 
-        print_r($post);
-        die();
+        $post->save();
 
-        // $post->save();
-        // $post::save([
-        //     'name' => $request->name,
-        //     'description' => $request->description,
-        //     'image' => $request->image,
-        //     'category' => $request->category,
-        //     'user_id' =>$id,
-        // ]);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Post edited successfully',
+            'post' => $post,
+            'user' => Auth::user(),
+        ]);
+    }
+
+    public function delete($id)
+    {
+        $post = Post::find($id);
+        $post->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Post deleted successfully',
+        ]);
     }
 }
