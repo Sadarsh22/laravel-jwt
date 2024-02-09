@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\UUID;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 
 class Post extends Model implements JWTSubject
 {
-    use HasFactory,UUID;
+    use HasFactory,UUID,SoftDeletes;
 
     protected $fillable = [
         'name',
