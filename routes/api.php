@@ -4,6 +4,9 @@ use App\Http\Controllers\commentController;
 use App\Http\Controllers\postController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\userController;
+use App\Http\Controllers\countryController;
+use App\Http\Controllers\stateController;
+use App\Http\Controllers\cityController;
 
 Route::controller(userController::class)->group(function () {
     Route::post('login', 'login');
@@ -19,12 +22,32 @@ Route::controller(postController::class)->group(function () {
     Route::post('edit/{id}', 'edit');
     Route::post('delete/{id}', 'delete');
     Route::get('view/{id}', 'view');
-    Route::post('search','search');
-
+    Route::post('search', 'search');
 });
 
 Route::controller(commentController::class)->group(function () {
     Route::post('createComment', 'create');
     Route::post('editComment/{id}', 'edit');
     Route::post('deleteComment/{id}', 'delete');
+});
+
+Route::controller(countryController::class)->group(function () {
+    Route::post('country/create', 'create');
+    Route::patch('country/update/{id}', 'update');
+    Route::get('country/view', 'view');
+    Route::delete('country/delete/{id}', 'delete');
+});
+
+Route::controller(stateController::class)->group(function () {
+    Route::post('state/create/{id}', 'create');
+    Route::patch('state/update/{id}', 'update');
+    Route::get('state/view', 'view');
+    Route::delete('state/delete/{id}', 'delete');
+});
+
+Route::controller(cityController::class)->group(function () {
+    Route::post('city/create/{id}', 'create');
+    Route::patch('city/update/{id}', 'update');
+    Route::get('city/view', 'view');
+    Route::delete('city/delete/{id}', 'delete');
 });
