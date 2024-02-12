@@ -17,7 +17,7 @@ class postController extends Controller
 
     public function create(Request $request)
     {
-        $allowedCategory = ['a','b','c','d'];
+        $allowedCategory = ['a', 'b', 'c', 'd'];
         $request->validate([
             'name' => 'required|unique:posts',
             'category' => Rule::in($allowedCategory),
@@ -28,7 +28,7 @@ class postController extends Controller
         $post = Post::create([
             'name' => $request->name,
             'description' => $request->description,
-            'image' => $request->image,
+            'image' => $request->image->getClientOriginalName(),
             'category' => $request->category,
             'user_id' => $uid,
         ]);
@@ -46,35 +46,36 @@ class postController extends Controller
         ]);
     }
 
-    public function listing()
+    public function listing(Request $request)
     {
         return response()->json([
             'status' => 'success',
-            'listing' => Post::all(),
+            'listing' => Post::all()->forPage($request->pageNo, $request->display_per_page),
         ]);
     }
 
     public function view($id)
     {
         return response()->json([
-            'status'=>'success',
-            'post'=>Post::find($id),
-            'comments'=>Comment::where('post_id',$id)->orderBy('created_at','desc')->get(),
+            'status' => 'success',
+            'post' => Post::find($id),
+            'comments' => Comment::where('post_id', $id)->orderBy('created_at', 'desc')->get(),
         ]);
     }
 
     public function edit(Request $request, $id)
     {
+        $allowedCategory = ['a', 'b', 'c', 'd'];
         $request->validate([
             'name' => 'required|',
-            'category' => 'required|string|min:6',
+            'category' => Rule::in($allowedCategory),
         ]);
 
         $post = Post::find($id);
 
         $post->name = $request->name;
         $post->description = $request->description;
-        $post->image = $request->image;
+        $post->image = $request->image->getClientOriginalName();
         $post->category = $request->category;
 
         $post->save();
@@ -95,6 +96,19 @@ class postController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Post deleted successfully',
+        ]);
+    }
+
+    public function search(Request $request)
+    {
+        $Postsearch = Post::where('name','like','%'.$request->search.'%','or','description','like','%'.$request->search.'%')->get();
+        $Commentsearch = Comment::where('message','like','%'.$request->search.'%')->get();
+
+        $search = $Postsearch->merge($Commentsearch);
+
+        return response()->json([
+            'status'=>'success',
+            'search'=>$search,
         ]);
     }
 }

@@ -15,14 +15,15 @@ Route::controller(userController::class)->group(function () {
 
 Route::controller(postController::class)->group(function () {
     Route::post('create', 'create');
-    Route::get('listing', 'listing');
+    Route::post('listing', 'listing');
     Route::post('edit/{id}', 'edit');
     Route::post('delete/{id}', 'delete');
     Route::get('view/{id}', 'view');
+    Route::post('search','search');
+
 });
 
 Route::controller(commentController::class)->group(function () {
-
     Route::post('createComment', 'create');
     Route::post('editComment/{id}', 'edit');
     Route::post('deleteComment/{id}', 'delete');
