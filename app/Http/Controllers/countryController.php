@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\State;
 use App\Models\Country;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class countryController extends Controller
 {
@@ -36,7 +37,7 @@ class countryController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'code' => 'required|min:3|unique:countries'
+            'code' => 'required|min:3|unique:countries,code,'.$cid
         ]);
         
         $uid = Auth::user()->id;
@@ -60,6 +61,16 @@ class countryController extends Controller
         return response()->json([
             'status'=>'success',
             'Countries'=>Country::all('name'),
+        ]);
+    }
+
+    public function read(Request $request)
+    {
+        $cid = Country::where('code',$request->code)->first()->id;
+        $states = State::where('country_id',$cid)->get('name');
+        return response()->json([
+            'status'=>'success',
+            'States'=>$states
         ]);
     }
 

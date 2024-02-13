@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\State;
+use App\Models\City;
 USE Illuminate\Support\Facades\Auth;
 
 class stateController extends Controller
@@ -35,7 +36,7 @@ class stateController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'code' => 'required|min:2|unique:states'
+            'code' => 'required|min:2|unique:states,code,'.$sid
         ]);
         
         $uid = Auth::user()->id;
@@ -59,6 +60,16 @@ class stateController extends Controller
         return response()->json([
             'status'=>'success',
             'States'=>State::all('name'),
+        ]);
+    }
+
+    public function read(Request $request)
+    {
+        $sid = State::where('code',$request->code)->first()->id;
+        $cities = City::where('state_id',$sid)->get('name');
+        return response()->json([
+            'status'=>'success',
+            'cities'=>$cities
         ]);
     }
 

@@ -14,11 +14,11 @@ class commentController extends Controller
         $this->middleware('auth:api');
     }
 
-    public function create(Request $request)
+    public function create(Request $request,$pid)
     {
         $comment = Comment::create([
             'message' => $request->message,
-            'post_id' => 'ff9dbc51-04be-466e-bfbc-ffe91e946e65',
+            'post_id' => $pid,
         ]);
 
         $user = Auth::user();
@@ -49,7 +49,7 @@ class commentController extends Controller
     public function delete($id)
     {
         $comment = Comment::find($id);
-        $comment::delete();
+        $comment->delete();
 
         return response()->json([
             'status' =>'success',
