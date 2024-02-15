@@ -7,6 +7,7 @@ use App\Http\Controllers\userController;
 use App\Http\Controllers\countryController;
 use App\Http\Controllers\stateController;
 use App\Http\Controllers\cityController;
+use App\Http\Controllers\zipcodeController;
 
 Route::controller(userController::class)->group(function () {
     Route::post('login', 'login');
@@ -14,6 +15,7 @@ Route::controller(userController::class)->group(function () {
     Route::post('logout', 'logout');
     Route::post('refresh', 'refresh');
     Route::get('me', 'me');
+    Route::get('user/view/{id}','view');
 });
 
 Route::controller(postController::class)->group(function () {
@@ -52,4 +54,9 @@ Route::controller(cityController::class)->group(function () {
     Route::patch('city/update/{id}', 'update');
     Route::get('city/view', 'view');
     Route::delete('city/delete/{id}', 'delete');
+});
+
+Route::controller(zipcodeController::class)->group(function () {
+    Route::post('zip/create/{id}', 'create');
+    Route::post('zip/view','view');
 });
