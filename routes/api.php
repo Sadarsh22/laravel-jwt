@@ -13,9 +13,10 @@ Route::controller(userController::class)->group(function () {
     Route::post('login', 'login');
     Route::post('register', 'register');
     Route::post('logout', 'logout');
-    Route::post('refresh', 'refresh');
-    Route::get('me', 'me');
     Route::get('user/view/{id}','view');
+    Route::patch('user/edit/{id}','edit');
+    Route::delete('user/delete/{id}','delete');
+
 });
 
 Route::controller(postController::class)->group(function () {

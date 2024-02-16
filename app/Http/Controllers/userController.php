@@ -10,10 +10,33 @@ use Illuminate\Validation\Rule;
 
 class userController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    }
+
+    public function permission()
+    {
+        $array = array();
+
+        $uid = Auth::user()->id;
+        $value = User::where('created_by', $uid)->get('id')->toArray();
+
+        foreach ($value as $val)
+            $array[] = ($val['id']);
+
+        $c = 0;
+        while ($c < sizeOf($array)) {
+            $value = User::where('created_by', $array[$c])->get('id')->toArray();
+            if ($value) {
+                foreach ($value as $val)
+                    $array[] = ($val['id']);
+            }
+            $c++;
+        }
+        $array[] = Auth::user()->id;
+
+        return $array;
     }
 
     public function login(Request $request)
@@ -101,43 +124,9 @@ class userController extends Controller
         ]);
     }
 
-    public function me()
-    {
-        return response()->json([
-            'status' => 'success',
-            'user' => Auth::user(),
-        ]);
-    }
-
-    public function refresh()
-    {
-        return response()->json([
-            'status' => 'success',
-            'user' => Auth::user(),
-            'authorisation' => [
-                'token' => Auth::refresh(),
-                'type' => 'bearer',
-            ]
-        ]);
-    }
-
     public function view($id)
     {
-        $array = array();
-
-        $array[] = Auth::user()->id;
-        $uid = Auth::user()->id;
-        $value = User::where('created_by', $uid)->get('id')->toArray();
-        foreach ($value as $val)
-            $array[] = ($val['id']);
-
-        foreach ($array as $arr) {
-            $value = User::where('created_by', $arr)->get('id')->toArray();
-            if ($value) {
-                foreach ($value as $val)
-                    $array[] = ($val['id']);
-            }
-        }
+        $array = $this->permission();
         if (in_array($id, $array)) {
             $display = User::where('created_by', $id)->get();
             return response()->json($display);
@@ -148,8 +137,50 @@ class userController extends Controller
         return $array;
     }
 
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        $val = User::find();
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+            'password' => 'required|string|min:6',
+        ]);
+
+        $array = $this->permission();
+        if (in_array($id, $array)) {
+
+            $user = User::find($id);
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->password = $request->password;
+            $user->user_type = $request->user_type;
+            $user->created_by = Auth::user()->id;
+
+            $user->save();
+
+            return response()->json([
+                'status' => 'user edited successfully',
+                'user' => $user
+            ]);
+        } else {
+            return response()->json('Be within Your limits');
+        }
+
+        return $array;
+    }
+
+    public function delete($id)
+    {
+        $array = $this->permission();
+
+        if (in_array($id, $array)) {
+
+            $user = User::find($id);
+            $user->delete();
+            return response()->json([
+                'status' => 'user deleted successfully',
+            ]);
+        } else {
+            return response()->json('Be within Your limits');
+        }
     }
 }
